@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CFT for Project A to provision EC2"
+Parameters:
+  InstanceName:
+    Type: String
+    Description: Name of the EC2 instance
+    Default: <Enter Name of the Instane>
+Resources:
+  ec2projectA:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0d5eff06f840b45e9
+      SubnetId: subnet-d495c7da
+      SecurityGroupIds: ['sg-0252a0cc2e1065b0e']
+      KeyName: aws-1
+      Tags:
+        - Key: Name
+          Value: !Ref InstanceName
+      UserData:
+        "Fn::Base64":
+          !Sub |
+            #!/bin/bash
+            yum install httpd -y
+            echo '<html><title>this is my first user-data test</title><body bgcolor="#54ff9f">' > /var/www/html/index.html
+            echo '<h1><center>User data test 1<br /> <br />' >> /var/www/html/index.html
+            echo '<iframe width="560" height="315" src="https://www.youtube.com/embed/xZ3k7Fd6_eU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' >>  /var/www/html/index.html
+            echo '</center></h1></body></html>'  >> /var/www/html/index.html
+            service httpd start
+        

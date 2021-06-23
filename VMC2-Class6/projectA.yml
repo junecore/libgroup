@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Project A Resources
+Parameters:
+  VPCID:
+    Type: String
+    Default: 'vpc-e235a29f'
+    
+Resources:
+  SecGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable SSH/RDP access and HTTP public
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '3389'
+          ToPort: '3389'
+          CidrIp: 0.0.0.0/0
+      VpcId:
+        Ref: VPCID
+ 
+
+  LinuxServer:
+    DependsOn: SecGroup
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-0d5eff06f840b45e9'
+      InstanceType: t2.micro
+      SecurityGroups:
+        - !Ref: SecGroup
+      KeyName: MyKeyPairNV
+      Tags:
+        - Key: Name
+          Value: LinuxServer1
+      
+
+  WindowsServer:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-0ce14a8ecbae3e30e'
+      InstanceType: t3.medium
+      SecurityGroups:
+        - !Ref: SecGroup
+      KeyName: MyKeyPairNV
+      Tags:
+        - Key: Name
+          Value: Webserver1
+
